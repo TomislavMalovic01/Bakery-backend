@@ -1,6 +1,11 @@
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { ProductIngredient } from "../entities/ProductIngredient";
+import { NameModel } from "../models/name.model";
+import { Mode } from "fs";
+
+
+
 
 
 
@@ -60,13 +65,19 @@ export class ProductIngredientService {
 
                 product: {
                     productId: true,
-                    name: true
+                    name: true,
+                    createdAt : true,
+                    updatedAt : true,
+                    deletedAt:  true
                 },
                 ingredient: {
                     ingredientId: true,
                     name: true,
                     isVegan: true,
-                    isVegeterian: true
+                    isVegeterian: true,
+                    createdAt : true,
+                    updatedAt : true,
+                    deleteAt:  true
 
                 }
 
@@ -89,6 +100,8 @@ export class ProductIngredientService {
 
         })
 
+    
+
 
         const returnData = {
             productId: data[0].productId,
@@ -109,11 +122,28 @@ export class ProductIngredientService {
             )
         })
 
+      
+
+
+       
         return returnData
 
 
 
     }
+
+    static async createProduct(model: NameModel) {
+        return await repo.save({
+            name: model.name,
+            createdAt: new Date()
+        });
+    }
+    
+  
+
+    
+
+
 
 }
 

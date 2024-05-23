@@ -1,6 +1,7 @@
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { Category } from "../entities/Category";
+import { NameModel } from "../models/name.model";
 
 
 
@@ -13,7 +14,9 @@ export class CatergoryServices{
             select : {
                 categoryId : true,
                 name : true,
-                createdAt : true
+                createdAt : true,
+                updatedAt : true,
+                deletedAt :  true
             },
             
             where : {
@@ -22,4 +25,5 @@ export class CatergoryServices{
 
         })
     }
+ 
 }

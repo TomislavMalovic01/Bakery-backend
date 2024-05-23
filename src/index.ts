@@ -8,6 +8,10 @@ import { ProductService } from "./services/product.service";
 import { ProductRoute } from "./routes/product.route";
 import { CategoryRoute } from "./routes/category.route";
 import { ProductIngredientService } from "./services/productingredient.service";
+import { ProductIngredientRoute } from "./routes/productingredient.route";
+import { UserService } from "./services/user.service";
+import { UserRoute } from "./routes/user.route";
+import { IngredientRoute } from "./routes/ingredient.route";
 
 
 
@@ -30,13 +34,14 @@ AppDataSource.initialize().then(() => {
 
 
 app.get('/', async (req, res) => {
-    res.json(await ProductIngredientService.getProductingridentById(1))
+    res.json(await UserService.getAllUsers())
 })
 
-
+app.use('/api/productingredient', ProductIngredientRoute)
 app.use('/api/product', ProductRoute)
 app.use('/api/category', CategoryRoute)
-
+app.use('/api/user', UserRoute)
+app.use('/api/ingredient', IngredientRoute)
 
 
 const resNotFound = (req, res) => {
