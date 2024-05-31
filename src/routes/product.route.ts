@@ -28,7 +28,7 @@ ProductRoute.put('/:id', (req, res) => {
 
 ProductRoute.delete('/:id', (req, res) => {
     const id = req.params.id as any as number
-    handleRequest(res, ProductService.deleteProductById(id))
+    handleRequest(res, ProductService.deleteDeviceById(id))
 })
 
 

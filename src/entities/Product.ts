@@ -23,7 +23,7 @@ export class Product {
   @Column("varchar", { name: "image", length: 255 })
   image: string;
 
-  @Column("text", { name: "description" })
+  @Column("text", { name: "description"})
   description: string;
 
   @Column("varchar", { name: "unit", length: 50 })

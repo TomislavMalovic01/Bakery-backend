@@ -36,4 +36,5 @@ export class ProductIngredient {
   })
   @JoinColumn([{ name: "product_id", referencedColumnName: "productId" }])
   product: Product;
+    name: string;
 }

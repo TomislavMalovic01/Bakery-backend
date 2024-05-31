@@ -12,6 +12,7 @@ import { ProductIngredientRoute } from "./routes/productingredient.route";
 import { UserService } from "./services/user.service";
 import { UserRoute } from "./routes/user.route";
 import { IngredientRoute } from "./routes/ingredient.route";
+import { Timestamp } from "typeorm";
 
 
 
@@ -35,6 +36,7 @@ AppDataSource.initialize().then(() => {
 
 app.get('/', async (req, res) => {
     res.json(await UserService.getAllUsers())
+    console.log(new Date)
 })
 
 app.use('/api/productingredient', ProductIngredientRoute)
@@ -46,7 +48,8 @@ app.use('/api/ingredient', IngredientRoute)
 
 const resNotFound = (req, res) => {
     res.status(404).json({
-        message: "Not found"
+        message: "NOT_FOUND",
+        Timestamp: new Date()
     })
 }
 

@@ -35,8 +35,8 @@ export class Ingredient {
   @Column("datetime", { name: "updated_at", nullable: true })
   updatedAt: Date | null;
 
-  @Column("datetime", { name: "delete_at", nullable: true })
-  deleteAt: Date | null;
+  @Column("datetime", { name: "deleted_at", nullable: true })
+  deletedAt: Date | null;
 
   @Column("int", { name: "category_id", nullable: true })
   categoryId: number | null;

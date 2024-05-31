@@ -1,7 +1,8 @@
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { Category } from "../entities/Category";
-import { NameModel } from "../models/name.model";
+import { checkIfDefined } from "../util";
+
 
 
 
@@ -24,6 +25,26 @@ export class CatergoryServices{
             }
 
         })
+    }
+
+    static async getCategoryById(id : number){
+        const data = await repo.findOne({
+            select : {
+                categoryId : true,
+                name : true,
+                createdAt : true,
+                updatedAt : true,
+                deletedAt :  true
+            },
+            
+            where : {
+                categoryId : id,
+                deletedAt : IsNull()
+            }
+
+        })
+
+     return checkIfDefined(data)
     }
  
 }

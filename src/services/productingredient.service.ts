@@ -1,8 +1,11 @@
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { ProductIngredient } from "../entities/ProductIngredient";
-import { NameModel } from "../models/name.model";
-import { Mode } from "fs";
+import { checkIfDefined } from "../util";
+import { ProductIngredientModel } from "../models/productingredient.model";
+import { DataSource } from "typeorm/browser";
+
+
 
 
 
@@ -22,6 +25,7 @@ export class ProductIngredientService {
                 productId: true,
                 ingredientId: true,
                 product: {
+                    productId: true,
                     name: true,
                     description: true,
                     unit: true,
@@ -32,6 +36,7 @@ export class ProductIngredientService {
 
                 },
                 ingredient: {
+                    ingredientId: true,
                     name: true,
                     isVegan: true,
                     isVegeterian: true,
@@ -45,7 +50,7 @@ export class ProductIngredientService {
                     deletedAt: IsNull()
                 },
                 ingredient: {
-                    deleteAt: IsNull()
+                    deletedAt: IsNull()
                 }
             },
             relations: {
@@ -77,7 +82,7 @@ export class ProductIngredientService {
                     isVegeterian: true,
                     createdAt : true,
                     updatedAt : true,
-                    deleteAt:  true
+                    deletedAt:  true
 
                 }
 
@@ -89,7 +94,7 @@ export class ProductIngredientService {
                 },
                 ingredient: {
                     //isVegan true za sranje
-                    deleteAt: IsNull()
+                    deletedAt: IsNull()
                 }
             },
             relations: {
@@ -108,7 +113,9 @@ export class ProductIngredientService {
             productName: data[0].product.name,
             ingredients: [],
             isVegan : true,
-            isVegeterian : true
+            isVegeterian : true,
+            deletedAt: null,
+            updatedAt : new Date()
         }
         data.forEach(singleData => {
             if(singleData.ingredient.isVegan == 0){
@@ -122,28 +129,86 @@ export class ProductIngredientService {
             )
         })
 
-      
-
-
-       
-        return returnData
-
+        return checkIfDefined(returnData)
+        
 
 
     }
 
-    static async createProduct(model: NameModel) {
-        return await repo.save({
-            name: model.name,
-            createdAt: new Date()
-        });
-    }
-    
+    static async createProductIngredient(model: ProductIngredientModel){
+        const returnData =  await repo.save({
+           name: model.name,
+           createdAt: new Date(),
+           productId: model.productId,
+           ingredientId : model.ingredientId
+        })
   
-
+        delete returnData.deletedAt;
+        return returnData
+  
     
+           
+     }
+
+     static async getProductIngredientWithoutRelationsById(id: number){
+        const returnData = await repo.findOne({
+            select: {
+                
+                ingredientId : true,
+                productId : true,
+                createdAt : true,
+                updatedAt : true,
+
+                },
+
+            
+            where: {
+                product: {
+                    productId: id,
+                    deletedAt: IsNull()
+                },
+                ingredient: {
+                    //isVegan true za sranje
+                    deletedAt: IsNull()
+                }
+            },
+            relations: {
+                product: true,
+                ingredient: true
+            }
+
+         
+        })
+
+        return checkIfDefined(returnData)
+        
+     }
+  
+     static async updateProductIngredient(id: number, model: ProductIngredientModel){
+        const returnData = await this.getProductIngredientWithoutRelationsById(id)
+        returnData.name = model.name
+        returnData.updatedAt = new Date()
+        returnData.productId = model.productId
+        returnData.ingredientId = model.ingredientId
+
+        const newData = await repo.save(returnData)
+        delete newData.deletedAt
+        return newData
+   
+     }
 
 
+     //treba da vrati status 204 kod
+     static async deleteProductIngredientById(id: number){
+        const returnData = await this.getProductIngredientWithoutRelationsById(id)
+        returnData.deletedAt = new Date()
+        await repo.save(returnData)
+     
+   
+     }
+  
+  
+  
 
 }
 
