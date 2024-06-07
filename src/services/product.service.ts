@@ -22,7 +22,7 @@ export class ProductService {
             price: true,
             energyValiue: true,
             categoryId: true,
-            
+            createdAt: true,
 
          },
          where: {
