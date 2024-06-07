@@ -97,14 +97,13 @@ export class ProductService {
    }
 
    static async createProduct(model: ProductModel){
-      const data = repo.save ({
+      return await repo.save ({
          categoryId : model.categoryId,
          name : model.name,
          createdAt : new Date()
       })
 
-      delete (await data).deletedAt
-      return data
+      
          
    }
 
@@ -114,9 +113,8 @@ export class ProductService {
       data.categoryId = model.categoryId
       data.updatedAt = new Date()
 
-      const newData = await repo.save(data)
-      delete newData.deletedAt
-      return newData
+      return await repo.save(data)
+   
    }
 
 

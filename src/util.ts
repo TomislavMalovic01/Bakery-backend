@@ -9,6 +9,8 @@ export async function handleRequest(res: Response, callback: Promise<any>,) {
             return
 
         }
+
+        delete data.deletedAt
         res.json(data)
     } catch (e) {
         let code = 500

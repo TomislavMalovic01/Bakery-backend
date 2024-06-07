@@ -54,15 +54,11 @@ export class IngredientService {
      }
   
      static async createIngredient(model: IngredientModel){
-        const data =  await repo.save({
+        return await repo.save({
            name: model.name,
            createdAt: new Date()
         })
-  
-        delete data.deletedAt;
-        return data
-  
-    
+
            
      }
   
@@ -71,9 +67,7 @@ export class IngredientService {
         data.name= model.name
         data.updatedAt = new Date()
   
-        const newData =  await repo.save(data)
-        delete newData.deletedAt;
-        return newData;
+        return await repo.save(data)
      }
      //treba da vrati status 204 kod
      static async deleteIngredientById(id: number){

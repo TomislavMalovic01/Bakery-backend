@@ -136,22 +136,17 @@ export class ProductIngredientService {
     }
 
     static async createProductIngredient(model: ProductIngredientModel){
-        const returnData =  await repo.save({
+        return await repo.save({
            name: model.name,
            createdAt: new Date(),
            productId: model.productId,
            ingredientId : model.ingredientId
         })
-  
-        delete returnData.deletedAt;
-        return returnData
-  
-    
-           
+     
      }
 
      static async getProductIngredientWithoutRelationsById(id: number){
-        const returnData = await repo.findOne({
+        const data = await repo.findOne({
             select: {
                 
                 ingredientId : true,
@@ -180,32 +175,30 @@ export class ProductIngredientService {
          
         })
 
-        return checkIfDefined(returnData)
+        return checkIfDefined(data)
         
      }
   
      static async updateProductIngredient(id: number, model: ProductIngredientModel){
-        const returnData = await this.getProductIngredientWithoutRelationsById(id)
-        returnData.name = model.name
-        returnData.updatedAt = new Date()
-        returnData.productId = model.productId
-        returnData.ingredientId = model.ingredientId
+        const data = await this.getProductIngredientWithoutRelationsById(id)
+        data.name = model.name
+        data.updatedAt = new Date()
+        data.productId = model.productId
+        data.ingredientId = model.ingredientId
 
-        const newData = await repo.save(returnData)
-        delete newData.deletedAt
-        return newData
+        return await repo.save(data)
    
      }
 
 
      //treba da vrati status 204 kod
      static async deleteProductIngredientById(id: number){
-        const returnData = await this.getProductIngredientWithoutRelationsById(id)
-        returnData.deletedAt = new Date()
-        await repo.save(returnData)
+        const data = await this.getProductIngredientWithoutRelationsById(id)
+        data.deletedAt = new Date()
+        await repo.save(data)
      
    
-     }
+    }
   
   
   
