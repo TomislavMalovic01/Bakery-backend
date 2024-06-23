@@ -13,14 +13,10 @@ ProductIngredientRoute.get('/', (req, res) => {
 })
 
 
-ProductIngredientRoute.get('/:id/simple', (req, res) => {
-    const id = req.params.id as any as number
-    handleRequest(res,ProductIngredientService.getProductIngredientWithoutRelationsById(id))
-})
 
 ProductIngredientRoute.get('/:id', (req, res) => {
     const id = req.params.id as any as number
-    handleRequest(res,ProductIngredientService.getProductingridentById(id))
+    handleRequest(res,ProductIngredientService.getProductIngredientById(id))
 })
 
 
@@ -28,13 +24,21 @@ ProductIngredientRoute.post('/', (req, res) => {
     handleRequest(res, ProductIngredientService.createProductIngredient(req.body))
 })
 
-ProductIngredientRoute.put('/:id', (req, res) => {
-    const id = req.params.id as any as number
-    handleRequest(res, ProductIngredientService.updateProductIngredient(id, req.body)) //reuqust body odakle se izvlaci ovbaj nas model
+ProductIngredientRoute.put('/:productId/:ingredientId', (req, res) => {
+    const productId = req.params.productId as any as number
+    const ingredientId = req.params.ingredientId as any as number
+    console.log("BACK RUTE", productId, ingredientId, req.body)
+    handleRequest(res, ProductIngredientService.updateProductIngredient(productId,ingredientId, req.body)) //reuqust body odakle se izvlaci ovbaj nas model
 })
 
 
 ProductIngredientRoute.delete('/:id', (req, res) => {
     const id = req.params.id as any as number
     handleRequest(res, ProductIngredientService.deleteProductIngredientById(id))
+})
+
+ProductIngredientRoute.delete('/delete/:productId/:oldIngredientId', (req, res) => {
+    const productId = req.params.productId as any as number
+    const oldIngredientId = req.params.oldIngredientId as any as number
+    handleRequest(res, ProductIngredientService.deleteProductIngredientInEdit(productId, oldIngredientId))
 })

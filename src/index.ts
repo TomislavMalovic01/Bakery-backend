@@ -26,7 +26,7 @@ app.use(morgan('tiny'))
 configDotenv()
 AppDataSource.initialize().then(() => {
     console.log('Connected to database')
-    const port = process.env.SERVER_PORT || 4000 
+    const port = process.env.SERVER_PORT || 4000
     app.listen(port, () => {
         console.log("Listening on port" + port)
     })
@@ -54,7 +54,7 @@ const resNotFound = (req, res) => {
 }
 
 app.get("*", resNotFound)
-app.post("*", resNotFound) 
+app.post("*", resNotFound)
 app.put("*", resNotFound)
 app.delete("*", resNotFound)
 

@@ -17,7 +17,9 @@ ProductRoute.get('/:id', (req, res) => {
 })
 
 ProductRoute.post('/', (req, res) => {
+    console.log(req.body)
     handleRequest(res, ProductService.createProduct(req.body))
+    
 })
 
 ProductRoute.put('/:id', (req, res) => {

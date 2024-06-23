@@ -5,6 +5,9 @@ import { Product } from "./Product";
 @Index("fk_product_ingredient_ingredient_idx", ["ingredientId"], {})
 @Entity("product_ingredient", { schema: "bakery" })
 export class ProductIngredient {
+  forEach(arg0: (d: any) => void) {
+      throw new Error("Method not implemented.");
+  }
   @Column("int", { primary: true, name: "product_id", unsigned: true })
   productId: number;
 
@@ -36,5 +39,4 @@ export class ProductIngredient {
   })
   @JoinColumn([{ name: "product_id", referencedColumnName: "productId" }])
   product: Product;
-    name: string;
 }

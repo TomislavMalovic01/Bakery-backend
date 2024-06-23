@@ -16,6 +16,7 @@ export class IngredientService {
     static async getAllIngredient() { 
         return await repo.find({
             select : {
+               ingredientId: true,
                 name : true,
                 isVegan : true,
                 isVegeterian : true,
@@ -56,6 +57,8 @@ export class IngredientService {
      static async createIngredient(model: IngredientModel){
         return await repo.save({
            name: model.name,
+           isVegan : model.isVegan,
+           isVegeterian : model.isVegeterian,
            createdAt: new Date()
         })
 
@@ -65,6 +68,8 @@ export class IngredientService {
      static async updateIngredient(id: number, model: IngredientModel){
         const data = await this.getIngredientByID(id)
         data.name= model.name
+        data.isVegan=model.isVegan,
+        data.isVegeterian=model.isVegeterian
         data.updatedAt = new Date()
   
         return await repo.save(data)

@@ -4,6 +4,7 @@ import { Response } from "express";
 export async function handleRequest(res: Response, callback: Promise<any>,) {
     try {
         const data = await callback
+        console.log(data)
         if (data == undefined) {
             res.status(204).send()
             return

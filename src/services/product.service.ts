@@ -23,6 +23,7 @@ export class ProductService {
             energyValiue: true,
             categoryId: true,
             createdAt: true,
+            updatedAt: true
 
          },
          where: {
@@ -48,6 +49,7 @@ export class ProductService {
             energyValiue: true,
             categoryId: true,
             createdAt: true,
+            updatedAt:true,
 
 
             category: {
@@ -98,8 +100,12 @@ export class ProductService {
 
    static async createProduct(model: ProductModel){
       return await repo.save ({
-         categoryId : model.categoryId,
          name : model.name,
+         description : model.description,
+         price:model.price,
+         unit:model.unit,
+         energyValiue:model.energyValiue,
+         categoryId:model.categoryId,
          createdAt : new Date()
       })
 
@@ -109,8 +115,13 @@ export class ProductService {
 
    static async updateProduct(id: number, model: ProductModel){
       const data : Product = await this.getProductWithoutRelationsById(id)
-      data.name = model.name
-      data.categoryId = model.categoryId
+      data.name = model.name,
+      data.description = model.description,
+      data.price = model.price,
+      data.unit = model.unit,
+      data.energyValiue = model.energyValiue,
+      data.categoryId = model.categoryId,
+      data.createdAt = new Date()
       data.updatedAt = new Date()
 
       return await repo.save(data)

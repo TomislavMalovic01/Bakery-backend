@@ -3,37 +3,24 @@ import { AppDataSource } from "../db";
 import { ProductIngredient } from "../entities/ProductIngredient";
 import { checkIfDefined } from "../util";
 import { ProductIngredientModel } from "../models/productingredient.model";
-import { DataSource } from "typeorm/browser";
 
-
-
-
-
-
-
-
-
-
-
-const repo = AppDataSource.getRepository(ProductIngredient)
+const repo = AppDataSource.getRepository(ProductIngredient);
 
 export class ProductIngredientService {
 
     static async getAllProductIngredient() {
-        return await repo.find({
+        const data = await repo.find({
             select: {
                 productId: true,
                 ingredientId: true,
+                createdAt: true,
+                updatedAt: true,
                 product: {
                     productId: true,
                     name: true,
-                    description: true,
-                    unit: true,
-                    price: true,
-                    energyValiue: true,
-                    categoryId: true,
                     createdAt: true,
-
+                    updatedAt: true,
+                    deletedAt: true
                 },
                 ingredient: {
                     ingredientId: true,
@@ -41,9 +28,9 @@ export class ProductIngredientService {
                     isVegan: true,
                     isVegeterian: true,
                     createdAt: true,
-
+                    updatedAt: true,
+                    deletedAt: true
                 }
-
             },
             where: {
                 product: {
@@ -51,41 +38,70 @@ export class ProductIngredientService {
                 },
                 ingredient: {
                     deletedAt: IsNull()
-                }
+                },
+                deletedAt: IsNull()
             },
             relations: {
                 product: true,
                 ingredient: true
             }
+        });
 
-        })
+        const productMap = new Map<number, any>();
+
+        data.forEach(singleData => {
+            const productId = singleData.product.productId;
+            if (!productMap.has(productId)) {
+                productMap.set(productId, {
+                    productId: productId,
+                    productName: singleData.product.name,
+                    ingredients: [],
+                    isVegan: true,
+                    isVegeterian: true,
+                    deletedAt: null,
+                    updatedAt: singleData.product.updatedAt,
+                    createdAt: singleData.product.createdAt
+                });
+            }
+
+            const productData = productMap.get(productId);
+
+            if (singleData.ingredient.isVegan == 0) {
+                productData.isVegan = false;
+            }
+
+            if (singleData.ingredient.isVegeterian == 0) {
+                productData.isVegeterian = false;
+            }
+
+            productData.ingredients.push(singleData.ingredient);
+        });
+
+        return Array.from(productMap.values()).map(checkIfDefined);
     }
 
 
 
 
-    static async getProductingridentById(id: number) {
+    static async getProductIngredientById(id: number) {
         const data = await repo.find({
             select: {
-
                 product: {
                     productId: true,
                     name: true,
-                    createdAt : true,
-                    updatedAt : true,
-                    deletedAt:  true
+                    createdAt: true,
+                    updatedAt: true,
+                    deletedAt: true
                 },
                 ingredient: {
                     ingredientId: true,
                     name: true,
                     isVegan: true,
                     isVegeterian: true,
-                    createdAt : true,
-                    updatedAt : true,
-                    deletedAt:  true
-
+                    createdAt: true,
+                    updatedAt: true,
+                    deletedAt: true
                 }
-
             },
             where: {
                 product: {
@@ -93,9 +109,9 @@ export class ProductIngredientService {
                     deletedAt: IsNull()
                 },
                 ingredient: {
-                    //isVegan true za sranje
                     deletedAt: IsNull()
-                }
+                },
+                deletedAt: IsNull()
             },
             relations: {
                 product: true,
@@ -103,106 +119,147 @@ export class ProductIngredientService {
             }
 
 
-        })
-
-    
-
+        });
 
         const returnData = {
             productId: data[0].productId,
             productName: data[0].product.name,
             ingredients: [],
-            isVegan : true,
-            isVegeterian : true,
+            isVegan: true,
+            isVegeterian: true,
             deletedAt: null,
-            updatedAt : new Date()
-        }
+            updatedAt: new Date(),
+            createdAt: new Date()
+        };
+
+
         data.forEach(singleData => {
-            if(singleData.ingredient.isVegan == 0){
-                returnData.isVegan = false
+            if (singleData.ingredient.isVegan == 0) {
+                returnData.isVegan = false;
             }
 
-            if(singleData.ingredient.isVegeterian == 0){
-                returnData.isVegeterian = false
+            if (singleData.ingredient.isVegeterian == 0) {
+                returnData.isVegeterian = false;
             }
-            returnData.ingredients.push(singleData.ingredient
-            )
+            returnData.ingredients.push(singleData.ingredient);
+        });
+
+
+        return checkIfDefined(returnData);
+    }
+
+
+
+
+    static async createProductIngredient(model: ProductIngredientModel) {
+        return await repo.save({
+            productId: model.productId,
+            ingredientId: model.ingredientId,
+            createdAt: new Date()
         })
-
-        return checkIfDefined(returnData)
-        
-
 
     }
 
-    static async createProductIngredient(model: ProductIngredientModel){
-        return await repo.save({
-           name: model.name,
-           createdAt: new Date(),
-           productId: model.productId,
-           ingredientId : model.ingredientId
-        })
-     
-     }
 
-     static async getProductIngredientWithoutRelationsById(id: number){
+    static async getProductIngredientByBothId(productId: number, oldIngredientId: number) {
         const data = await repo.findOne({
             select: {
-                
-                ingredientId : true,
-                productId : true,
-                createdAt : true,
-                updatedAt : true,
-
-                },
-
-            
-            where: {
-                product: {
-                    productId: id,
-                    deletedAt: IsNull()
-                },
-                ingredient: {
-                    //isVegan true za sranje
-                    deletedAt: IsNull()
-                }
+                productId: true,
+                ingredientId: true,
+                createdAt: true,
+                updatedAt: true
             },
-            relations: {
-                product: true,
-                ingredient: true
+            where: {
+                productId: productId,
+                ingredientId: oldIngredientId,
+                deletedAt: IsNull()
             }
 
-         
+
+
+        });
+
+        return data
+    }
+
+
+    static async updateProductIngredient(productId: number, oldIngredientId: number, model: any) {
+        // Pronađi zapis sa starim ingredientId
+        console.log("bEKEND SERVIS", productId, oldIngredientId, model);
+        const oldData = await this.getProductIngredientByBothId(productId, oldIngredientId);
+
+        console.log("Bekend Data", oldData);
+        if (!oldData) {
+            throw new Error("Old data not found");
+        }
+
+        // Pronađi postojeći zapis sa novim ingredientId, ako postoji
+        const existingData = await repo.findOne({
+            where: {
+                productId: productId,
+                ingredientId: model.ingredientId
+            }
+        });
+
+        if (existingData) {
+            throw new Error("Combination of productId and ingredientId already exists");
+        }
+
+        // Obriši stari zapis
+        await repo.remove(oldData);
+
+        // Kreiraj novi zapis
+        const newData = new ProductIngredient();
+        newData.productId = model.productId;
+        newData.ingredientId = model.ingredientId;
+        newData.createdAt = oldData.createdAt;
+        newData.updatedAt = new Date();
+
+        console.log("Bekend Data posle", newData);
+
+        return await repo.save(newData);
+    }
+
+
+
+
+
+    //treba da vrati status 204 kod
+    static async deleteProductIngredientById(id: number) {
+        const data = await repo.find({
+            where: {
+                productId: id,
+                deletedAt: IsNull()
+            }
         })
 
-        return checkIfDefined(data)
-        
-     }
-  
-     static async updateProductIngredient(id: number, model: ProductIngredientModel){
-        const data = await this.getProductIngredientWithoutRelationsById(id)
-        data.name = model.name
-        data.updatedAt = new Date()
-        data.productId = model.productId
-        data.ingredientId = model.ingredientId
-
+        data.forEach(d => {
+            d.deletedAt = new Date()
+        })
         return await repo.save(data)
-   
-     }
 
 
-     //treba da vrati status 204 kod
-     static async deleteProductIngredientById(id: number){
-        const data = await this.getProductIngredientWithoutRelationsById(id)
-        data.deletedAt = new Date()
-        await repo.save(data)
-     
-   
     }
-  
-  
-  
 
+
+    static async deleteProductIngredientInEdit(productId: number, oldIngredientId: number) {
+        const data = await repo.findOne({
+            where: {
+                productId: productId,
+                ingredientId: oldIngredientId,
+                deletedAt: IsNull()
+            }
+        })
+
+
+        console.log(data)
+        data.deletedAt = new Date()
+        return await repo.save(data)
+
+
+
+    }
 }
+
 
 
