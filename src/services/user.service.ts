@@ -4,76 +4,56 @@ import { User } from "../entities/User";
 import { IsNull } from "typeorm";
 import { UserModel } from "../models/user.model";
 import { checkIfDefined } from "../util";
-
+import { configDotenv } from "dotenv";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import { match } from "assert";
 
 
 
 
 const repo = AppDataSource.getRepository(User)
 
+configDotenv()
+const accessSecret = process.env.ACCESS_TOKEN_SECRET;
+const accessExpire = process.env.ACCESS_TOKEN_TTL;
+const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
+const refreshExpire = process.env.REFRESH_TOKEN_TTL;
 
 export class UserService {
-    static async getAllUsers() {
-        return await repo.find({
-            select: {
-                userId: true,
-                username: true,
-                password: true,
-                createdAt: true,
-                deletedAt: true,
-                updatedAt: true
-            },
-            where: {
-                deletedAt: IsNull()
-            }
+    static async login(model: UserModel) {
+        const user = await this.getUserByUsername(model.username)
+        const matches = await bcrypt.compare(model.password, user.password)
+        if(matches){
+            return{
+            username: user.username, 
+            access: jwt.sign({username: user.username}, accessSecret, {expiresIn: accessExpire}),
+            refresh: jwt.sign({username: user.username}, refreshSecret, {expiresIn: refreshExpire}),
+            };
+        }
+        throw new Error("BAD_CREDENTIALS")
 
-        })
     }
 
-    static async getUserById(id: number) {
+    public static async refreshToken(refresh: string){
+        try{
+            const decoded: any = jwt.verify(refresh,refreshSecret as string)
+            return {
+                username: decoded.username,
+                access: jwt.sign({username: decoded.username},accessSecret,{expiresIn: accessExpire}),
+                refresh: refresh  //dokle god se ne ulogujemo ponovo refresh je uvek isti
+            }
+        }catch(err){
+            throw new Error("REFRESH_FAILED");
+        }
+    }
+
+    static async getUserByUsername(username: string) {
         const data = await repo.findOne({
-            select: {
-                userId: true,
-                username: true,
-                password: true,
-                createdAt: true,
-                deletedAt: true
-            },
             where: {
-                userId: id,
-                deletedAt: IsNull()
+                username: username
             }
         })
         return checkIfDefined(data)
     }
-
-
-    static async createUser(model: UserModel) {
-        return await repo.save({
-            username: model.username,
-            password: model.password,
-            createdAt: new Date()
-        })
-
-    }
-
-    static async updateUser(id: number, model: UserModel) {
-        const data: User = await this.getUserById(id);
-        data.username = model.username
-        data.password = model.password
-        data.createdAt = new Date()
-        data.updatedAt = new Date()
-
-        return await repo.save(data)
-    }
-
-
-
-    static async deleteCustomerById(id: number) {
-        const data = await this.getUserById(id);
-        data.deletedAt = new Date()
-        await repo.save(data)
-    }
-
-
 }

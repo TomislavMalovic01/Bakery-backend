@@ -23,4 +23,5 @@ export class User {
 
   @Column("datetime", { name: "deleted_at", nullable: true })
   deletedAt: Date | null;
+
 }

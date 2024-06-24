@@ -9,10 +9,11 @@ import { ProductRoute } from "./routes/product.route";
 import { CategoryRoute } from "./routes/category.route";
 import { ProductIngredientService } from "./services/productingredient.service";
 import { ProductIngredientRoute } from "./routes/productingredient.route";
-import { UserService } from "./services/user.service";
 import { UserRoute } from "./routes/user.route";
 import { IngredientRoute } from "./routes/ingredient.route";
 import { Timestamp } from "typeorm";
+import { User } from "./entities/User";
+import { authenticateToken } from "./util";
 
 
 
@@ -35,10 +36,11 @@ AppDataSource.initialize().then(() => {
 
 
 app.get('/', async (req, res) => {
-    res.json(await UserService.getAllUsers())
+    res.json(await ProductService.getAllProduct())
     console.log(new Date)
 })
-
+app.use(authenticateToken)
+app.use('/api/user', UserRoute )
 app.use('/api/productingredient', ProductIngredientRoute)
 app.use('/api/product', ProductRoute)
 app.use('/api/category', CategoryRoute)
