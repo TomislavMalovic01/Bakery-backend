@@ -1,4 +1,4 @@
-import { IsNull } from "typeorm";
+import { IsNull, Like } from "typeorm";
 import { AppDataSource } from "../db";
 import { Product } from "../entities/Product";
 import { checkIfDefined } from "../util";
@@ -23,7 +23,8 @@ export class ProductService {
             energyValiue: true,
             categoryId: true,
             createdAt: true,
-            updatedAt: true
+            updatedAt: true,
+            image:true
 
          },
          where: {
@@ -46,6 +47,7 @@ export class ProductService {
             description: true,
             unit: true,
             price: true,
+            image:true,
             energyValiue: true,
             categoryId: true,
             createdAt: true,
@@ -106,6 +108,7 @@ export class ProductService {
          unit:model.unit,
          energyValiue:model.energyValiue,
          categoryId:model.categoryId,
+         image:model.image,
          createdAt : new Date()
       })
 
@@ -137,6 +140,27 @@ export class ProductService {
       await repo.save(data)
    }
 
+
+   static async getProductByName(name: string) {
+      return await repo.findOne({
+         select: {
+            productId: true,
+            name: true,
+            description: true,
+            unit: true,
+            price: true,
+            energyValiue: true,
+            image:true,
+            categoryId: true,
+            createdAt: true,
+            updatedAt: true
+         },
+         where: {
+            name: Like(`%${name}%`),
+            deletedAt: IsNull()
+         }
+      });
+   }
 
 
 

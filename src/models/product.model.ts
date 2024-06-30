@@ -5,6 +5,7 @@ export interface ProductModel {
     unit:string
     price:string
     energyValiue:string
+    image:string
     
     
 

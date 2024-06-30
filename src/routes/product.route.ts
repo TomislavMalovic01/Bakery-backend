@@ -16,6 +16,11 @@ ProductRoute.get('/:id', (req, res) => {
     handleRequest(res, ProductService.getProductByID(id))
 })
 
+ProductRoute.get('/name/:name', (req, res) => {
+    const name = req.params.name;
+    handleRequest(res, ProductService.getProductByName(name));
+});
+
 ProductRoute.post('/', (req, res) => {
     console.log(req.body)
     handleRequest(res, ProductService.createProduct(req.body))

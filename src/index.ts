@@ -48,6 +48,7 @@ app.use('/api/user', UserRoute)
 app.use('/api/ingredient', IngredientRoute)
 
 
+
 const resNotFound = (req, res) => {
     res.status(404).json({
         message: "NOT_FOUND",

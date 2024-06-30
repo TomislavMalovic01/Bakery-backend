@@ -36,32 +36,37 @@ export function checkIfDefined<T>(data : T){
 
 configDotenv()
 export async function authenticateToken(req, res, next) {
-
     const unprotected = [
         '/api/user/login',
-        '/api/user/refresh'
-        ]
+        '/api/user/refresh',
+        '/api/product',
+        '/api/ingredient',
+        '/api/category',
+        '/api/product/name/:name',  // Dodajte putanju bez zahteva za tokenom
+    ];
 
-        if(unprotected.includes(req.path)){
-            next()
-            return
-        }
-
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
- 
-    if (token == null) {
-        return sendErrorResponse(res, 401, 'NO_TOKEN')
+    // Provera da li je putanja među nezaštićenima
+    if (unprotected.some(path => req.path.startsWith(path))) {
+        return next(); // Izlazak iz middleware-a za nezaštićene putanje
     }
- 
+
+    // Provera JWT tokena za zaštićene putanje
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return sendErrorResponse(res, 401, 'NO_TOKEN');
+    }
+
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, decoded: any) => {
         if (err) {
-            return sendErrorResponse(res, 403, 'INVALID_TOKEN')
+            return sendErrorResponse(res, 403, 'INVALID_TOKEN');
         }
-        req.username = decoded.username
-        next()
-    })
+        req.username = decoded.username;
+        next();
+    });
 }
+
 
 export function sendErrorResponse(res: Response,code = 400, msg= "Bad request"){
     res.status(code).json({
