@@ -89,9 +89,14 @@ export class ProductIngredientService {
                 product: {
                     productId: true,
                     name: true,
+                    image:true,
+                    description:true,
+                    energyValiue:true,
+                    categoryId:true,
+                    price:true,
                     createdAt: true,
                     updatedAt: true,
-                    deletedAt: true
+                    deletedAt: true,
                 },
                 ingredient: {
                     ingredientId: true,
@@ -124,6 +129,11 @@ export class ProductIngredientService {
         const returnData = {
             productId: data[0].productId,
             productName: data[0].product.name,
+            image:data[0].product.image,
+            description:data[0].product.description,
+            price:data[0].product.price,
+            energyValiue:data[0].product.energyValiue,
+            categoryId:data[0].product.categoryId,
             ingredients: [],
             isVegan: true,
             isVegeterian: true,
