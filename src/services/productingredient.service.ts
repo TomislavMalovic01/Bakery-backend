@@ -132,7 +132,7 @@ export class ProductIngredientService {
             image:data[0].product.image,
             description:data[0].product.description,
             price:data[0].product.price,
-            energyValiue:data[0].product.energyValiue,
+            
             categoryId:data[0].product.categoryId,
             ingredients: [],
             isVegan: true,
